@@ -56,7 +56,8 @@ jobs:
       - name: Run cargo check
         uses: actions-rs/cargo@v1
         with:
-          command: check --features mutex
+          command: check
+          args: --features mutex
         
   test:
     name: Test Suite
@@ -78,5 +79,5 @@ jobs:
       - name: Run cargo test
         uses: actions-rs/cargo@v1
         with:
-          command: test --features mutex
-        
+          command: test
+          args: --features mutex

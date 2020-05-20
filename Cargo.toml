@@ -1,8 +1,16 @@
 [package]
 name = 'atomic-shim'
+description = 'Atomic types for unsupported platforms'
 version = '0.1.0'
 authors = ['Bruno Tavares <connect+github@bltavares.com>']
 edition = '2018'
+homepage = 'https://github.com/bltavares/atomic-shim'
+repository = 'https://github.com/bltavares/atomic-shim'
+readme = 'README.md'
+license = 'MIT OR Apache-2.0'
+keywords = ['atomic']
+[package.metadata.docs.rs]
+features = ['mutex']
 
 [features]
 mutex = ['crossbeam']

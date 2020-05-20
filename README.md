@@ -2,6 +2,8 @@
 
 Atomic types shims for unsupported architectures.
 
+![crates](https://img.shields.io/crates/v/atomic-shim.svg) ![docs](https://docs.rs/atomic-shim/badge.svg)
+
 This crate provides shims for `std::sync::AtomicU64` and `std::sync::AtomicI64` for `mips` and `powerpc`.
 
 The `std` primitives are not available on all platforms, and that makes it tricky to write code for `mips`, such as OpenWRT Routers.
@@ -75,3 +77,18 @@ let global_thread_count = AtomicU64::new(0);
 let old_thread_count = global_thread_count.fetch_add(1, Ordering::SeqCst);
 println!("live threads: {}", old_thread_count + 1);
 ```
+
+## License
+
+Licensed under either of
+
+- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any
+additional terms or conditions.
