@@ -31,7 +31,7 @@ jobs:
           args: --all -- --check
 
       - name: Run cargo clippy
-        run: cargo clippy --features mutex -- -D warning
+        run: cargo clippy --features mutex -- -D warnings
 
   check:
     name: Check

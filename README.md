@@ -2,6 +2,7 @@
 
 Atomic types shims for unsupported architectures.
 
+![main ci](https://img.shields.io/github/workflow/status/bltavares/atomic-shim/Quickstart/master?label=main%20ci) ![cross ci](https://img.shields.io/github/workflow/status/bltavares/atomic-shim/Cross-compile/master?label=cross%20ci)
 ![crates](https://img.shields.io/crates/v/atomic-shim.svg) ![docs](https://docs.rs/atomic-shim/badge.svg)
 
 This crate provides shims for `std::sync::AtomicU64` and `std::sync::AtomicI64` for `mips` and `powerpc`.
