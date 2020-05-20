@@ -124,9 +124,10 @@ impl AtomicU64 {
     /// let some_var = AtomicU64::new(5);
     /// assert_eq!(some_var.swap(10, Ordering::Relaxed), 5);
     /// ```
-    pub fn swap(&self, value: u64, ordering: Ordering) -> u64 {
-        let prev = self.load(ordering);
-        self.store(value, ordering);
+    pub fn swap(&self, value: u64, _: Ordering) -> u64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = value;
         prev
     }
 
@@ -152,10 +153,11 @@ impl AtomicU64 {
     /// assert_eq!(some_var.compare_and_swap(6, 12, Ordering::Relaxed), 10);
     /// assert_eq!(some_var.load(Ordering::Relaxed), 10);
     /// ```
-    pub fn compare_and_swap(&self, current: u64, new: u64, ordering: Ordering) -> u64 {
-        let prev = self.load(ordering);
+    pub fn compare_and_swap(&self, current: u64, new: u64, _: Ordering) -> u64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
         if prev == current {
-            self.store(new, ordering);
+            *lock = new;
         };
         prev
     }
@@ -192,12 +194,13 @@ impl AtomicU64 {
         &self,
         current: u64,
         new: u64,
-        success: Ordering,
+        _: Ordering,
         _: Ordering,
     ) -> Result<u64, u64> {
-        let prev = self.load(success);
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
         if prev == current {
-            self.store(new, success);
+            *lock = new;
             Ok(current)
         } else {
             Err(prev)
@@ -258,9 +261,10 @@ impl AtomicU64 {
     /// assert_eq!(foo.fetch_add(10, Ordering::SeqCst), 0);
     /// assert_eq!(foo.load(Ordering::SeqCst), 10);
     /// ```
-    pub fn fetch_add(&self, val: u64, ordering: Ordering) -> u64 {
-        let prev = self.load(ordering);
-        self.store(prev.wrapping_add(val), ordering);
+    pub fn fetch_add(&self, val: u64, _: Ordering) -> u64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev.wrapping_add(val);
         prev
     }
 
@@ -284,9 +288,10 @@ impl AtomicU64 {
     /// assert_eq!(foo.fetch_sub(10, Ordering::SeqCst), 20);
     /// assert_eq!(foo.load(Ordering::SeqCst), 10);
     /// ```
-    pub fn fetch_sub(&self, val: u64, ordering: Ordering) -> u64 {
-        let prev = self.load(ordering);
-        self.store(prev.wrapping_sub(val), ordering);
+    pub fn fetch_sub(&self, val: u64, _: Ordering) -> u64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev.wrapping_sub(val);
         prev
     }
 
@@ -311,9 +316,10 @@ impl AtomicU64 {
     /// assert_eq!(foo.fetch_and(0b110011, Ordering::SeqCst), 0b101101);
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b100001);
     /// ```
-    pub fn fetch_and(&self, val: u64, ordering: Ordering) -> u64 {
-        let prev = self.load(ordering);
-        self.store(prev & val, ordering);
+    pub fn fetch_and(&self, val: u64, _: Ordering) -> u64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev & val;
         prev
     }
 
@@ -338,9 +344,10 @@ impl AtomicU64 {
     /// assert_eq!(foo.fetch_nand(0x31, Ordering::SeqCst), 0x13);
     /// assert_eq!(foo.load(Ordering::SeqCst), !(0x13 & 0x31));
     /// ```
-    pub fn fetch_nand(&self, val: u64, ordering: Ordering) -> u64 {
-        let prev = self.load(ordering);
-        self.store(!(prev & val), ordering);
+    pub fn fetch_nand(&self, val: u64, _: Ordering) -> u64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = !(prev & val);
         prev
     }
 
@@ -365,9 +372,10 @@ impl AtomicU64 {
     /// assert_eq!(foo.fetch_or(0b110011, Ordering::SeqCst), 0b101101);
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b111111);
     /// ```
-    pub fn fetch_or(&self, val: u64, ordering: Ordering) -> u64 {
-        let prev = self.load(ordering);
-        self.store(prev | val, ordering);
+    pub fn fetch_or(&self, val: u64, _: Ordering) -> u64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev | val;
         prev
     }
 
@@ -392,9 +400,10 @@ impl AtomicU64 {
     /// assert_eq!(foo.fetch_xor(0b110011, Ordering::SeqCst), 0b101101);
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b011110);
     /// ```
-    pub fn fetch_xor(&self, val: u64, ordering: Ordering) -> u64 {
-        let prev = self.load(ordering);
-        self.store(prev ^ val, ordering);
+    pub fn fetch_xor(&self, val: u64, _: Ordering) -> u64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev ^ val;
         prev
     }
 }
@@ -528,9 +537,10 @@ impl AtomicI64 {
     /// let some_var = AtomicI64::new(5);
     /// assert_eq!(some_var.swap(10, Ordering::Relaxed), 5);
     /// ```
-    pub fn swap(&self, value: i64, ordering: Ordering) -> i64 {
-        let prev = self.load(ordering);
-        self.store(value, ordering);
+    pub fn swap(&self, value: i64, _: Ordering) -> i64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = value;
         prev
     }
 
@@ -556,10 +566,11 @@ impl AtomicI64 {
     /// assert_eq!(some_var.compare_and_swap(6, 12, Ordering::Relaxed), 10);
     /// assert_eq!(some_var.load(Ordering::Relaxed), 10);
     /// ```
-    pub fn compare_and_swap(&self, current: i64, new: i64, ordering: Ordering) -> i64 {
-        let prev = self.load(ordering);
+    pub fn compare_and_swap(&self, current: i64, new: i64, _: Ordering) -> i64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
         if prev == current {
-            self.store(new, ordering);
+            *lock = new;
         };
         prev
     }
@@ -596,12 +607,13 @@ impl AtomicI64 {
         &self,
         current: i64,
         new: i64,
-        success: Ordering,
+        _: Ordering,
         _: Ordering,
     ) -> Result<i64, i64> {
-        let prev = self.load(success);
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
         if prev == current {
-            self.store(new, success);
+            *lock = new;
             Ok(current)
         } else {
             Err(prev)
@@ -662,9 +674,10 @@ impl AtomicI64 {
     /// assert_eq!(foo.fetch_add(10, Ordering::SeqCst), 0);
     /// assert_eq!(foo.load(Ordering::SeqCst), 10);
     /// ```
-    pub fn fetch_add(&self, val: i64, ordering: Ordering) -> i64 {
-        let prev = self.load(ordering);
-        self.store(prev.wrapping_add(val), ordering);
+    pub fn fetch_add(&self, val: i64, _: Ordering) -> i64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev.wrapping_add(val);
         prev
     }
 
@@ -688,9 +701,10 @@ impl AtomicI64 {
     /// assert_eq!(foo.fetch_sub(10, Ordering::SeqCst), 20);
     /// assert_eq!(foo.load(Ordering::SeqCst), 10);
     /// ```
-    pub fn fetch_sub(&self, val: i64, ordering: Ordering) -> i64 {
-        let prev = self.load(ordering);
-        self.store(prev.wrapping_sub(val), ordering);
+    pub fn fetch_sub(&self, val: i64, _: Ordering) -> i64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev.wrapping_sub(val);
         prev
     }
 
@@ -715,9 +729,10 @@ impl AtomicI64 {
     /// assert_eq!(foo.fetch_and(0b110011, Ordering::SeqCst), 0b101101);
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b100001);
     /// ```
-    pub fn fetch_and(&self, val: i64, ordering: Ordering) -> i64 {
-        let prev = self.load(ordering);
-        self.store(prev & val, ordering);
+    pub fn fetch_and(&self, val: i64, _: Ordering) -> i64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev & val;
         prev
     }
 
@@ -742,9 +757,10 @@ impl AtomicI64 {
     /// assert_eq!(foo.fetch_nand(0x31, Ordering::SeqCst), 0x13);
     /// assert_eq!(foo.load(Ordering::SeqCst), !(0x13 & 0x31));
     /// ```
-    pub fn fetch_nand(&self, val: i64, ordering: Ordering) -> i64 {
-        let prev = self.load(ordering);
-        self.store(!(prev & val), ordering);
+    pub fn fetch_nand(&self, val: i64, _: Ordering) -> i64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = !(prev & val);
         prev
     }
 
@@ -769,9 +785,10 @@ impl AtomicI64 {
     /// assert_eq!(foo.fetch_or(0b110011, Ordering::SeqCst), 0b101101);
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b111111);
     /// ```
-    pub fn fetch_or(&self, val: i64, ordering: Ordering) -> i64 {
-        let prev = self.load(ordering);
-        self.store(prev | val, ordering);
+    pub fn fetch_or(&self, val: i64, _: Ordering) -> i64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev | val;
         prev
     }
 
@@ -796,9 +813,10 @@ impl AtomicI64 {
     /// assert_eq!(foo.fetch_xor(0b110011, Ordering::SeqCst), 0b101101);
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b011110);
     /// ```
-    pub fn fetch_xor(&self, val: i64, ordering: Ordering) -> i64 {
-        let prev = self.load(ordering);
-        self.store(prev ^ val, ordering);
+    pub fn fetch_xor(&self, val: i64, _: Ordering) -> i64 {
+        let mut lock = self.value.write().unwrap();
+        let prev = lock.clone();
+        *lock = prev ^ val;
         prev
     }
 }
