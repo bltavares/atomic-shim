@@ -8,10 +8,10 @@ Atomic types shims for unsupported architectures.
 <a href="https://github.com/bltavares/atomic-shim/actions?query=workflow%3ACross-compile+branch%3Amaster">
     <img src="https://img.shields.io/github/workflow/status/bltavares/atomic-shim/Cross-compile/master?label=cross%20ci" />
 </a>
-<a href="https://crates.io/atomic-shim">
+<a href="https://crates.io/crates/atomic-shim">
     <img src="https://img.shields.io/crates/v/atomic-shim.svg" />
 </a>
-<a href="https://doc.rs/atomic-shim">
+<a href="https://docs.rs/atomic-shim">
     <img src="https://docs.rs/atomic-shim/badge.svg" />
 </a>
 
