@@ -1,0 +1,15 @@
+[package]
+name = 'atomic-shim'
+version = '0.1.0'
+authors = ['Bruno Tavares <connect+github@bltavares.com>']
+edition = '2018'
+
+[features]
+mutex = ['crossbeam']
+[dependencies.crossbeam]
+version = '0.7.3'
+optional = true
+[target."cfg(target_arch = \"mips\")".dependencies]
+crossbeam = '0.7.3'
+[target."cfg(target_arch = \"powerpc\")".dependencies]
+crossbeam = '0.7.3'
