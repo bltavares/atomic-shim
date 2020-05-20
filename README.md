@@ -29,6 +29,14 @@ atomic-shim = "*"
 #mutex = ["atomic-shim/mutex"]
 ```
 
+## Test
+
+To run tests, it is important to enable the `--features mutex`.
+
+```sh
+cargo test --features mutex
+```
+
 ## Examples
 
 A simple spinlock:

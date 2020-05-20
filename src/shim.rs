@@ -81,7 +81,7 @@ impl AtomicU64 {
     /// assert_eq!(some_var.load(Ordering::Relaxed), 5);
     /// ```
     pub fn load(&self, _: Ordering) -> u64 {
-        self.value.read().unwrap().clone()
+        *self.value.read().unwrap()
     }
 
     /// Stores a value into the atomic integer.
@@ -126,7 +126,7 @@ impl AtomicU64 {
     /// ```
     pub fn swap(&self, value: u64, _: Ordering) -> u64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = value;
         prev
     }
@@ -155,7 +155,7 @@ impl AtomicU64 {
     /// ```
     pub fn compare_and_swap(&self, current: u64, new: u64, _: Ordering) -> u64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         if prev == current {
             *lock = new;
         };
@@ -198,7 +198,7 @@ impl AtomicU64 {
         _: Ordering,
     ) -> Result<u64, u64> {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         if prev == current {
             *lock = new;
             Ok(current)
@@ -263,7 +263,7 @@ impl AtomicU64 {
     /// ```
     pub fn fetch_add(&self, val: u64, _: Ordering) -> u64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev.wrapping_add(val);
         prev
     }
@@ -290,7 +290,7 @@ impl AtomicU64 {
     /// ```
     pub fn fetch_sub(&self, val: u64, _: Ordering) -> u64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev.wrapping_sub(val);
         prev
     }
@@ -318,7 +318,7 @@ impl AtomicU64 {
     /// ```
     pub fn fetch_and(&self, val: u64, _: Ordering) -> u64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev & val;
         prev
     }
@@ -346,7 +346,7 @@ impl AtomicU64 {
     /// ```
     pub fn fetch_nand(&self, val: u64, _: Ordering) -> u64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = !(prev & val);
         prev
     }
@@ -374,7 +374,7 @@ impl AtomicU64 {
     /// ```
     pub fn fetch_or(&self, val: u64, _: Ordering) -> u64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev | val;
         prev
     }
@@ -402,7 +402,7 @@ impl AtomicU64 {
     /// ```
     pub fn fetch_xor(&self, val: u64, _: Ordering) -> u64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev ^ val;
         prev
     }
@@ -494,7 +494,7 @@ impl AtomicI64 {
     /// assert_eq!(some_var.load(Ordering::Relaxed), 5);
     /// ```
     pub fn load(&self, _: Ordering) -> i64 {
-        self.value.read().unwrap().clone()
+        *self.value.read().unwrap()
     }
 
     /// Stores a value into the atomic integer.
@@ -539,7 +539,7 @@ impl AtomicI64 {
     /// ```
     pub fn swap(&self, value: i64, _: Ordering) -> i64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = value;
         prev
     }
@@ -568,7 +568,7 @@ impl AtomicI64 {
     /// ```
     pub fn compare_and_swap(&self, current: i64, new: i64, _: Ordering) -> i64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         if prev == current {
             *lock = new;
         };
@@ -611,7 +611,7 @@ impl AtomicI64 {
         _: Ordering,
     ) -> Result<i64, i64> {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         if prev == current {
             *lock = new;
             Ok(current)
@@ -676,7 +676,7 @@ impl AtomicI64 {
     /// ```
     pub fn fetch_add(&self, val: i64, _: Ordering) -> i64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev.wrapping_add(val);
         prev
     }
@@ -703,7 +703,7 @@ impl AtomicI64 {
     /// ```
     pub fn fetch_sub(&self, val: i64, _: Ordering) -> i64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev.wrapping_sub(val);
         prev
     }
@@ -731,7 +731,7 @@ impl AtomicI64 {
     /// ```
     pub fn fetch_and(&self, val: i64, _: Ordering) -> i64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev & val;
         prev
     }
@@ -759,7 +759,7 @@ impl AtomicI64 {
     /// ```
     pub fn fetch_nand(&self, val: i64, _: Ordering) -> i64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = !(prev & val);
         prev
     }
@@ -787,7 +787,7 @@ impl AtomicI64 {
     /// ```
     pub fn fetch_or(&self, val: i64, _: Ordering) -> i64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev | val;
         prev
     }
@@ -815,7 +815,7 @@ impl AtomicI64 {
     /// ```
     pub fn fetch_xor(&self, val: i64, _: Ordering) -> i64 {
         let mut lock = self.value.write().unwrap();
-        let prev = lock.clone();
+        let prev = *lock;
         *lock = prev ^ val;
         prev
     }
