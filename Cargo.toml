@@ -13,11 +13,11 @@ keywords = ['atomic']
 features = ['mutex']
 
 [features]
-mutex = ['crossbeam']
-[dependencies.crossbeam]
-version = '0.7.3'
+mutex = ['crossbeam-utils']
+[dependencies.crossbeam-utils]
+version = '0.8'
 optional = true
 [target."cfg(target_arch = \"mips\")".dependencies]
-crossbeam = '0.7.3'
+crossbeam-utils = '0.8'
 [target."cfg(target_arch = \"powerpc\")".dependencies]
-crossbeam = '0.7.3'
+crossbeam-utils = '0.8'
