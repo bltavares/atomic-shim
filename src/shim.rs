@@ -1,4 +1,4 @@
-use crossbeam::sync::ShardedLock;
+use crossbeam_utils::sync::ShardedLock;
 use std::sync::atomic::Ordering;
 
 /// An integer type which can be safely shared between threads.
