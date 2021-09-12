@@ -1,3 +1,21 @@
+## 2021-09-12, Version v0.2.0
+### Commits
+- [[`b8ae60b369`](https://github.com/bltavares/atomic-shim/commit/b8ae60b36902dac3c40b6afd3724aac9d5691bca)] (cargo-release) version 0.2.0 (Bruno Tavares)
+- [[`740c4806fb`](https://github.com/bltavares/atomic-shim/commit/740c4806fbae69e6dbd2919103f89768d5dc1acb)] Add a changelog (Bruno Tavares)
+- [[`7bb15a3acf`](https://github.com/bltavares/atomic-shim/commit/7bb15a3acfd879a68a3c24124e911546691b4d33)] Merge pull request #1 from paolobarbolini/master (Bruno Tavares)
+- [[`719ebb7d43`](https://github.com/bltavares/atomic-shim/commit/719ebb7d433b68df09a037da3bd4fd590dfd85d4)] Bump crossbeam and switch to crossbeam-utils (Paolo Barbolini)
+- [[`f9e277e900`](https://github.com/bltavares/atomic-shim/commit/f9e277e90071213520deafb2f35d523249d1cec9)] Fix urls (Bruno Tavares)
+
+### Stats
+```diff
+ CHANGELOG.md | 27 +++++++++++++++++++++++++++
+ Cargo.toml   | 12 ++++++------
+ README.md    |  4 ++--
+ src/shim.rs  |  2 +-
+ 4 files changed, 36 insertions(+), 9 deletions(-)
+```
+
+
 ## 2020-05-20, Version 0.1.0
 ### Commits
 - [[`3a0fe4e1ec`](https://github.com/bltavares/atomic-shim/commit/3a0fe4e1ec508cde094579a5c84f174d995c5bdb)] Link things to their places (Bruno Tavares)
