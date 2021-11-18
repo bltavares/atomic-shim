@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+
 //! Atomic types shims for unsupported architectures
 //!
 //! This crate provides shims for `std::sync::AtomicU64` and `std::sync::AtomicI64` for `mips` and `powerpc`.
@@ -52,8 +54,17 @@
 //! println!("live threads: {}", old_thread_count + 1);
 //! ```
 
-#[cfg(not(any(target_arch = "mips", target_arch = "powerpc", feature = "mutex")))]
+#[cfg(all(
+    not(any(target_arch = "mips", target_arch = "powerpc", feature = "mutex")),
+    feature = "std"
+))]
 pub use std::sync::atomic::{AtomicI64, AtomicU64};
+
+#[cfg(all(
+    not(any(target_arch = "mips", target_arch = "powerpc", feature = "mutex")),
+    not(feature = "std")
+))]
+pub use core::sync::atomic::{AtomicI64, AtomicU64};
 
 #[cfg(any(target_arch = "mips", target_arch = "powerpc", feature = "mutex"))]
 mod shim;

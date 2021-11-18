@@ -8,16 +8,24 @@ homepage = 'https://github.com/bltavares/atomic-shim'
 repository = 'https://github.com/bltavares/atomic-shim'
 readme = 'README.md'
 license = 'MIT OR Apache-2.0'
-keywords = ['atomic']
+keywords = ['atomic', 'no_std']
+
 [package.metadata.docs.rs]
-features = ['mutex']
+features = ['mutex', 'std']
 
 [features]
-mutex = ['crossbeam-utils']
-[dependencies.crossbeam-utils]
-version = '0.8'
+default = ['std']
+std = ['spin/std']
+mutex = ['spin']
+
+[dependencies.spin]
+version = '0.9.2'
 optional = true
+default-features = false
+features = ['mutex', 'spin_mutex']
+
 [target."cfg(target_arch = \"mips\")".dependencies]
-crossbeam-utils = '0.8'
+spin = { version = '0.9.2', default-features = false, features = ['mutex', 'spin_mutex'] }
+
 [target."cfg(target_arch = \"powerpc\")".dependencies]
-crossbeam-utils = '0.8'
+spin = { version = '0.9.2', default-features = false, features = ['mutex', 'spin_mutex'] }

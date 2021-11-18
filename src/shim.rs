@@ -1,10 +1,14 @@
-use crossbeam_utils::sync::ShardedLock;
+use spin::Mutex;
+
+#[cfg(not(feature = "std"))]
+use core::sync::atomic::Ordering;
+#[cfg(feature = "std")]
 use std::sync::atomic::Ordering;
 
 /// An integer type which can be safely shared between threads.
 #[derive(Debug, Default)]
 pub struct AtomicU64 {
-    value: ShardedLock<u64>,
+    value: Mutex<u64>,
 }
 
 impl AtomicU64 {
@@ -18,7 +22,7 @@ impl AtomicU64 {
     /// ```
     pub fn new(v: u64) -> Self {
         Self {
-            value: ShardedLock::new(v),
+            value: Mutex::new(v),
         }
     }
 
@@ -42,7 +46,7 @@ impl AtomicU64 {
     /// assert_eq!(some_var.load(Ordering::SeqCst), 5);
     /// ```
     pub fn get_mut(&mut self) -> &mut u64 {
-        self.value.get_mut().unwrap()
+        self.value.get_mut()
     }
 
     /// Consumes the atomic and returns the contained value.
@@ -61,7 +65,7 @@ impl AtomicU64 {
     /// assert_eq!(some_var.into_inner(), 5);
     /// ```
     pub fn into_inner(self) -> u64 {
-        self.value.into_inner().unwrap()
+        self.value.into_inner()
     }
 
     /// Loads a value from the atomic integer.
@@ -81,7 +85,7 @@ impl AtomicU64 {
     /// assert_eq!(some_var.load(Ordering::Relaxed), 5);
     /// ```
     pub fn load(&self, _: Ordering) -> u64 {
-        *self.value.read().unwrap()
+        *self.value.lock()
     }
 
     /// Stores a value into the atomic integer.
@@ -103,7 +107,7 @@ impl AtomicU64 {
     /// assert_eq!(some_var.load(Ordering::Relaxed), 10);
     /// ```
     pub fn store(&self, value: u64, _: Ordering) {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         *lock = value;
     }
 
@@ -125,7 +129,7 @@ impl AtomicU64 {
     /// assert_eq!(some_var.swap(10, Ordering::Relaxed), 5);
     /// ```
     pub fn swap(&self, value: u64, _: Ordering) -> u64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = value;
         prev
@@ -154,7 +158,7 @@ impl AtomicU64 {
     /// assert_eq!(some_var.load(Ordering::Relaxed), 10);
     /// ```
     pub fn compare_and_swap(&self, current: u64, new: u64, _: Ordering) -> u64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         if prev == current {
             *lock = new;
@@ -197,7 +201,7 @@ impl AtomicU64 {
         _: Ordering,
         _: Ordering,
     ) -> Result<u64, u64> {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         if prev == current {
             *lock = new;
@@ -262,7 +266,7 @@ impl AtomicU64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 10);
     /// ```
     pub fn fetch_add(&self, val: u64, _: Ordering) -> u64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev.wrapping_add(val);
         prev
@@ -271,7 +275,7 @@ impl AtomicU64 {
     /// Subtracts from the current value, returning the previous value.
     ///
     /// This operation wraps around on overflow.
-    ///    
+    ///
     /// It ignores the Ordering argument, but it is required for compatibility with `std::sync::AtomicU64`
     ///
     /// # Panics
@@ -289,7 +293,7 @@ impl AtomicU64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 10);
     /// ```
     pub fn fetch_sub(&self, val: u64, _: Ordering) -> u64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev.wrapping_sub(val);
         prev
@@ -317,7 +321,7 @@ impl AtomicU64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b100001);
     /// ```
     pub fn fetch_and(&self, val: u64, _: Ordering) -> u64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev & val;
         prev
@@ -345,7 +349,7 @@ impl AtomicU64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), !(0x13 & 0x31));
     /// ```
     pub fn fetch_nand(&self, val: u64, _: Ordering) -> u64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = !(prev & val);
         prev
@@ -373,7 +377,7 @@ impl AtomicU64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b111111);
     /// ```
     pub fn fetch_or(&self, val: u64, _: Ordering) -> u64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev | val;
         prev
@@ -384,7 +388,7 @@ impl AtomicU64 {
     /// Performs a bitwise "xor" operation on the current value and the argument val, and sets the new value to the result.
     /// Returns the previous value.
     ///
-    ///     
+    ///
     /// It ignores the Ordering argument, but it is required for compatibility with `std::sync::AtomicU64`
     ///
     /// # Panics
@@ -401,7 +405,7 @@ impl AtomicU64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b011110);
     /// ```
     pub fn fetch_xor(&self, val: u64, _: Ordering) -> u64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev ^ val;
         prev
@@ -417,7 +421,7 @@ impl From<u64> for AtomicU64 {
 /// An integer type which can be safely shared between threads.
 #[derive(Debug, Default)]
 pub struct AtomicI64 {
-    value: ShardedLock<i64>,
+    value: Mutex<i64>,
 }
 
 impl AtomicI64 {
@@ -431,7 +435,7 @@ impl AtomicI64 {
     /// ```
     pub fn new(v: i64) -> Self {
         Self {
-            value: ShardedLock::new(v),
+            value: Mutex::new(v),
         }
     }
 
@@ -455,7 +459,7 @@ impl AtomicI64 {
     /// assert_eq!(some_var.load(Ordering::SeqCst), 5);
     /// ```
     pub fn get_mut(&mut self) -> &mut i64 {
-        self.value.get_mut().unwrap()
+        self.value.get_mut()
     }
 
     /// Consumes the atomic and returns the contained value.
@@ -474,7 +478,7 @@ impl AtomicI64 {
     /// assert_eq!(some_var.into_inner(), 5);
     /// ```
     pub fn into_inner(self) -> i64 {
-        self.value.into_inner().unwrap()
+        self.value.into_inner()
     }
 
     /// Loads a value from the atomic integer.
@@ -494,7 +498,7 @@ impl AtomicI64 {
     /// assert_eq!(some_var.load(Ordering::Relaxed), 5);
     /// ```
     pub fn load(&self, _: Ordering) -> i64 {
-        *self.value.read().unwrap()
+        *self.value.lock()
     }
 
     /// Stores a value into the atomic integer.
@@ -516,7 +520,7 @@ impl AtomicI64 {
     /// assert_eq!(some_var.load(Ordering::Relaxed), 10);
     /// ```
     pub fn store(&self, value: i64, _: Ordering) {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         *lock = value;
     }
 
@@ -538,7 +542,7 @@ impl AtomicI64 {
     /// assert_eq!(some_var.swap(10, Ordering::Relaxed), 5);
     /// ```
     pub fn swap(&self, value: i64, _: Ordering) -> i64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = value;
         prev
@@ -567,7 +571,7 @@ impl AtomicI64 {
     /// assert_eq!(some_var.load(Ordering::Relaxed), 10);
     /// ```
     pub fn compare_and_swap(&self, current: i64, new: i64, _: Ordering) -> i64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         if prev == current {
             *lock = new;
@@ -610,7 +614,7 @@ impl AtomicI64 {
         _: Ordering,
         _: Ordering,
     ) -> Result<i64, i64> {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         if prev == current {
             *lock = new;
@@ -675,7 +679,7 @@ impl AtomicI64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 10);
     /// ```
     pub fn fetch_add(&self, val: i64, _: Ordering) -> i64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev.wrapping_add(val);
         prev
@@ -684,7 +688,7 @@ impl AtomicI64 {
     /// Subtracts from the current value, returning the previous value.
     ///
     /// This operation wraps around on overflow.
-    ///    
+    ///
     /// It ignores the Ordering argument, but it is required for compatibility with `std::sync::AtomicI64`
     ///
     /// # Panics
@@ -702,7 +706,7 @@ impl AtomicI64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 10);
     /// ```
     pub fn fetch_sub(&self, val: i64, _: Ordering) -> i64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev.wrapping_sub(val);
         prev
@@ -730,7 +734,7 @@ impl AtomicI64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b100001);
     /// ```
     pub fn fetch_and(&self, val: i64, _: Ordering) -> i64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev & val;
         prev
@@ -758,7 +762,7 @@ impl AtomicI64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), !(0x13 & 0x31));
     /// ```
     pub fn fetch_nand(&self, val: i64, _: Ordering) -> i64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = !(prev & val);
         prev
@@ -786,7 +790,7 @@ impl AtomicI64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b111111);
     /// ```
     pub fn fetch_or(&self, val: i64, _: Ordering) -> i64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev | val;
         prev
@@ -797,7 +801,7 @@ impl AtomicI64 {
     /// Performs a bitwise "xor" operation on the current value and the argument val, and sets the new value to the result.
     /// Returns the previous value.
     ///
-    ///     
+    ///
     /// It ignores the Ordering argument, but it is required for compatibility with `std::sync::AtomicI64`
     ///
     /// # Panics
@@ -814,7 +818,7 @@ impl AtomicI64 {
     /// assert_eq!(foo.load(Ordering::SeqCst), 0b011110);
     /// ```
     pub fn fetch_xor(&self, val: i64, _: Ordering) -> i64 {
-        let mut lock = self.value.write().unwrap();
+        let mut lock = self.value.lock();
         let prev = *lock;
         *lock = prev ^ val;
         prev
