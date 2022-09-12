@@ -9,6 +9,7 @@ repository = 'https://github.com/bltavares/atomic-shim'
 readme = 'README.md'
 license = 'MIT OR Apache-2.0'
 keywords = ['atomic']
+rust-version = "1.60"
 [package.metadata.docs.rs]
 features = ['mutex']
 
