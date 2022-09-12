@@ -17,5 +17,5 @@ mutex = ['crossbeam-utils']
 [dependencies.crossbeam-utils]
 version = '0.8'
 optional = true
-[target."cfg(target_has_atomic=\"64\"))".dependencies]
+[target."cfg(target_has_atomic=\"64\")".dependencies]
 crossbeam-utils = '0.8'
