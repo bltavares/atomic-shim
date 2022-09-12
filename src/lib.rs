@@ -52,11 +52,11 @@
 //! println!("live threads: {}", old_thread_count + 1);
 //! ```
 
-#[cfg(not(any(target_arch = "mips", target_arch = "powerpc", feature = "mutex")))]
+#[cfg(target_has_atomic="64")]
 pub use std::sync::atomic::{AtomicI64, AtomicU64};
 
-#[cfg(any(target_arch = "mips", target_arch = "powerpc", feature = "mutex"))]
+#[cfg(target_has_atomic="64")]
 mod shim;
 
-#[cfg(any(target_arch = "mips", target_arch = "powerpc", feature = "mutex"))]
+#[cfg(target_has_atomic="64")]
 pub use shim::{AtomicI64, AtomicU64};
